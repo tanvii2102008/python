@@ -1,0 +1,90 @@
+import csv
+
+FILE = "results.csv"
+
+def create_file():
+    try:
+        open(FILE, "x").close()
+        with open(FILE, "a", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Name", "Marks1", "Marks2", "Marks3", "Percentage", "Grade"])
+    except FileExistsError:
+        pass
+
+def calculate_grade(percentage):
+    if percentage >= 90: return "A+"
+    elif percentage >= 80: return "A"
+    elif percentage >= 70: return "B"
+    elif percentage >= 60: return "C"
+    elif percentage >= 50: return "D"
+    else: return "F"
+
+def add_result():
+    name = input("Enter student name: ")
+    m1 = float(input("Enter marks in Subject 1: "))
+    m2 = float(input("Enter marks in Subject 2: "))
+    m3 = float(input("Enter marks in Subject 3: "))
+
+    percentage = (m1 + m2 + m3) / 3
+    grade = calculate_grade(percentage)
+
+    with open(FILE, "a", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow([name, m1, m2, m3, percentage, grade])
+
+    print(f"\n✓ Result added! Percentage: {percentage:.2f}% | Grade: {grade}\n")
+
+def view_results():
+    try:
+        with open(FILE, newline="") as f:
+            reader = csv.reader(f)
+            next(reader)
+            print("\n=== All Student Results ===")
+            for row in reader:
+                print(f"Name: {row[0]}, Percent: {float(row[4]):.2f}%, Grade: {row[5]}")
+    except:
+        print("\n⚠ No data found.\n")
+
+def class_statistics():
+    percentages = []
+    try:
+        with open(FILE, newline="") as f:
+            reader = csv.reader(f)
+            next(reader)
+            for row in reader:
+                percentages.append(float(row[4]))
+
+        if not percentages:
+            print("\n⚠ No data found.\n")
+            return
+
+        avg = sum(percentages) / len(percentages)
+        max_percent = max(percentages)
+        print(f"\nClass Average: {avg:.2f}%")
+        print(f"Topper Score: {max_percent:.2f}%")
+    except:
+        print("\n⚠ No data found.\n")
+
+def menu():
+    create_file()
+    while True:
+        print("\nStudent Result Analyzer")
+        print("1. Add Result")
+        print("2. View All Results")
+        print("3. Show Class Statistics")
+        print("4. Exit")
+        choice = input("\nEnter choice: ")
+
+        if choice == "1":
+            add_result()
+        elif choice == "2":
+            view_results()
+        elif choice == "3":
+            class_statistics()
+        elif choice == "4":
+            print("\nThank you for using Result Analyzer!\n")
+            break
+        else:
+            print("\n⚠ Invalid choice. Try again.\n")
+
+menu()
