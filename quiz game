@@ -1,0 +1,65 @@
+import json
+import random
+
+FILE = "questions.json"
+
+def load_questions():
+    try:
+        with open(FILE, "r") as f:
+            return json.load(f)
+    except:
+        print("⚠ Error: questions.json not found.")
+        return []
+
+def start_quiz():
+    questions = load_questions()
+    if not questions:
+        return
+
+    random.shuffle(questions)
+    score = 0
+    wrong_answers = []
+
+    print("\n===== QUIZ GAME STARTED =====\n")
+
+    for index, q in enumerate(questions, 1):
+        print(f"Q{index}. {q['question']}")
+        for i, option in enumerate(q['options'], 1):
+            print(f"{i}. {option}")
+        try:
+            user_ans = int(input("Your answer (1-4): "))
+        except:
+            user_ans = 0
+
+        if user_ans == q["answer"]:
+            score += 1
+            print("✓ Correct!\n")
+        else:
+            print("✗ Wrong!\n")
+            wrong_answers.append(q)
+
+    print("\n===== QUIZ COMPLETED =====")
+    print(f"Your Total Score: {score} / {len(questions)}")
+
+    if wrong_answers:
+        print("\nCorrect Answers Review:")
+        for q in wrong_answers:
+            correct = q["options"][q["answer"] - 1]
+            print(f"✔ {q['question']} → {correct}")
+
+def menu():
+    while True:
+        print("\n===== QUIZ GAME =====")
+        print("1. Start Quiz")
+        print("2. Exit")
+        choice = input("\nEnter choice: ")
+
+        if choice == "1":
+            start_quiz()
+        elif choice == "2":
+            print("\nThank you for playing!\n")
+            break
+        else:
+            print("\n⚠ Invalid choice. Try again.\n")
+
+menu()
